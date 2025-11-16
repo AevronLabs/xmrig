@@ -15,7 +15,7 @@ cd hwloc-${HWLOC_VERSION}
 ./configure --disable-shared --enable-static --disable-io --disable-libudev --disable-libxml2
 JOBS=$(
     for f in /proc/sys/hw/ncpu /proc/sys/hw/logicalcpu; do
-        [[ -f "$f" ]] && { cat "$f"; exit; }
+        [ -f "$f" ] && { cat "$f"; exit; }
     done
     nproc
 )
