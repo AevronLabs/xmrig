@@ -2,11 +2,16 @@
 
 # https://xmrig.com/docs/miner/hugepages#onegb-huge-pages
 
-sysctl -w vm.nr_hugepages=$(nproc)
+for f in /proc/sys/hw/ncpu /proc/sys/hw/logicalcpu; do
+    [ -f "$f" ] && { CPUS=$(cat "$f"); break; }
+done
+: "${CPUS:=$(nproc)}"
 
-for i in $(find /sys/devices/system/node/node* -maxdepth 0 -type d);
-do
-    echo 3 > "$i/hugepages/hugepages-1048576kB/nr_hugepages";
+command -v sysctl >/dev/null 2>&1 && sysctl -w vm.nr_hugepages="$CPUS"
+
+for n in /sys/devices/system/node/node*; do
+    [ -d "$n/hugepages/hugepages-1048576kB" ] && \
+    echo 3 > "$n/hugepages/hugepages-1048576kB/nr_hugepages"
 done
 
-echo "1GB pages successfully enabled"
+echo "1GB pages enabled."
