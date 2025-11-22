@@ -38,7 +38,7 @@ void xmrig::GpuWorker::storeStats()
 
     // Switch to that index
     // All data will be in memory by the time it completes thanks to std::memory_order_seq_cst
-    m_index.fetch_xor(1, std::memory_order_seq_cst);
+    m_index.store(index, std::memory_order_seq_cst);
 }
 
 

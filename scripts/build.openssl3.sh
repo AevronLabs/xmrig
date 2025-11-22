@@ -15,7 +15,8 @@ JOBS=$(
     nproc
 )
 make -j"$JOBS"
-cp -fr include ../../deps
+[ -d "include "] && [ -d "../../deps" ] || { exit 1; }
+cp -a include/ ../../deps
 cp libcrypto.a ../../deps/lib
 cp libssl.a ../../deps/lib
 cd ..
