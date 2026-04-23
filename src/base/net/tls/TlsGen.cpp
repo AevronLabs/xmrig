@@ -114,10 +114,14 @@ bool xmrig::TlsGen::generate_x509(const char *commonName)
     X509_gmtime_adj(X509_get_notBefore(m_x509), 0);
     X509_gmtime_adj(X509_get_notAfter(m_x509), 315360000L);
 
-    auto name = X509_get_subject_name(m_x509);
-    X509_NAME_add_entry_by_txt(name, "CN", MBSTRING_ASC, reinterpret_cast<const uint8_t *>(commonName), -1, -1, 0);
+    const auto name = X509_get_subject_name(m_x509);
+    if (!name || X509_NAME_add_entry_by_txt(const_cast<X509_NAME *>(name), "CN", MBSTRING_ASC, reinterpret_cast<const uint8_t *>(commonName), -1, -1, 0) != 1) {
+        return false;
+    }
 
-    X509_set_issuer_name(m_x509, name);
+    if (X509_set_issuer_name(m_x509, name) != 1) {
+        return false;
+    }
 
     return X509_sign(m_x509, m_pkey, EVP_sha256());
 }
